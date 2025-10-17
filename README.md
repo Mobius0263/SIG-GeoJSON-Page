@@ -4,7 +4,7 @@ GeoJSON adalah format untuk menyandikan struktur data geografis sederhana yang d
 
 ---
 
-# GeoJSON Kelurahan Cipedes/Pasteur
+# GeoJSON Kelurahan Sukagalih/Pasteur
 
 Informasi jalan diambil dari Overpas Turbo menggunakan script berikut:
 
@@ -95,7 +95,33 @@ Contoh ini menampilkan sebuah jalan utama dengan informasi sepeda dan lalu linta
 }
 ```
 
-### 3. Jenis Geometri
+### 3. Rincian Tipe Jalan (properti `highway`)
+
+Properti `highway` mengklasifikasikan jenis jalan atau jalur. Berikut adalah jumlah dari setiap jenis yang ditemukan di dalam file:
+
+| Tipe Jalan (`highway`) | Jumlah |
+| ---------------------- | ------ |
+| `residential`          | 54     |
+| `service`              | 29     |
+| `living_street`        | 22     |
+| `primary`              | 18     |
+| `tertiary`             | 11     |
+| `footway`              | 11     |
+| `secondary`            | 9      |
+| `steps`                | 5      |
+| `trunk`                | 5      |
+| `trunk_link`           | 4      |
+| `path`                 | 1      |
+| `primary_link`         | 1      |
+| `tertiary_link`        | 1      |
+| `unclassified`         | 1      |
+| **Total** | **172** |
+
+> **Catatan**: Jumlah total (172) lebih kecil dari jumlah total fitur (201) karena beberapa fitur di dalam file tidak memiliki properti `highway`.
+
+---
+
+### 4. Jenis Geometri
 
 Berdasarkan data yang dianalisis, semua fitur menggunakan satu jenis geometri:
 
