@@ -9,9 +9,8 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <style>
-        /* This makes the map visible */
         #map { 
-            height: 80vh; /* 80% of the viewport height */
+            height: 80vh;
             width: 100%;
         }
     </style>
@@ -24,25 +23,17 @@
     <div id="map"></div>
 
     <script>
-        // --- (A) INITIALIZE THE MAP ---
-        // TODO: Change these coordinates to the center of your data
-        var map = L.map('map').setView([-6.8934, 107.5980], 13); // Example: Bandung
+        var map = L.map('map').setView([-6.8934, 107.5980], 13);
 
-        // --- (B) ADD A TILE LAYER (BACKGROUND MAP) ---
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
-        // --- (C) LOAD YOUR GEOJSON DATA ---
-        // TODO: Change 'your-data-file.geojson' to the name of your file
         fetch('export.geojson')
             .then(response => response.json())
             .then(data => {
-                // Add the GeoJSON layer to the map
                 L.geoJSON(data, {
                     onEachFeature: function(feature, layer) {
-                        // Check if your feature has a property to show in a popup
-                        // TODO: Change 'name' to a property from your file (e.g., 'keterangan')
                         if (feature.properties && feature.properties.keterangan) {
                             layer.bindPopup(feature.properties.keterangan);
                         }
