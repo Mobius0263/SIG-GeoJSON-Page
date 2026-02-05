@@ -3,46 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Leaflet Map</title>
-
+    <title>Flight Intersection Map</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
     <style>
-        #map { 
-            height: 80vh;
-            width: 100%;
-        }
+        #map { height: 80vh; width: 100%; }
+        #controls { padding: 20px; text-align: center; }
+        button { padding: 10px 20px; font-size: 16px; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <h1>Map Leaftlet JS</h1>
-    <p>Menampilkan map dari GeoJSON.</p>
+    <div id="controls">
+        <h1>Flight Intersection Visualizer</h1>
+        <button onclick="checkFlights()">Check Intersections (Pondok Cabe -> Kertajati)</button>
+        <p id="status">Click the button to check database...</p>
+    </div>
 
     <div id="map"></div>
 
     <script>
-        var map = L.map('map').setView([-6.8934, 107.5980], 13);
+        // 1. Initialize Map (Centered on West Java)
+        var map = L.map('map').setView([-6.6, 107.4], 9);
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            attribution: '&copy; OpenStreetMap contributors'
         }).addTo(map);
 
-        fetch('map.geojson')
-            .then(response => response.json())
-            .then(data => {
-                // Add the GeoJSON layer to the map
-                L.geoJSON(data, {
-                    onEachFeature: function(feature, layer) {
-                        // Check if your feature has a property to show in a popup
-                        // TODO: Change 'name' to a property from your file (e.g., 'keterangan')
-                        if (feature.properties && feature.properties.name) {
-                            layer.bindPopup(feature.properties.name);
-                        }
+        // Function to run when button is clicked
+        function checkFlights() {
+            document.getElementById('status').innerText = "Querying MongoDB...";
+
+            // 2. Fetch data from our Node.js Backend
+            fetch('/api/check-intersect')
+                .then(response => response.json())
+                .then(data => {
+                    
+                    // A. Draw the "Proposed Route" (The one we queried with) - BLUE
+                    L.geoJSON(data.proposed, {
+                        style: { color: "blue", weight: 5, dashArray: '10, 10' }
+                    }).bindPopup("<b>Proposed Route:</b><br>Pondok Cabe -> Kertajati").addTo(map);
+
+                    // B. Draw the "Matches" (The ones found in MongoDB) - RED
+                    if (data.matches.length > 0) {
+                        document.getElementById('status').innerText = `⚠️ Alert: Found ${data.matches.length} intersecting flight(s)!`;
+                        
+                        L.geoJSON(data.matches, {
+                            style: { color: "red", weight: 5 },
+                            onEachFeature: function(feature, layer) {
+                                // MongoDB stores the shape in 'path', but usually Leaflet expects geometry at the root
+                                // If your DB structure is { path: { type: 'LineString'... } }, we might need to adjust.
+                                // But L.geoJSON handles arrays of docs nicely if they follow GeoJSON structure.
+                                
+                                if (feature.route_name) {
+                                    layer.bindPopup("<b>INTERSECTION DETECTED!</b><br>" + feature.route_name);
+                                }
+                            }
+                        }).addTo(map);
+                    } else {
+                        document.getElementById('status').innerText = "✅ No intersections found.";
                     }
-                }).addTo(map);
-            });
+                })
+                .catch(err => {
+                    console.error(err);
+                    document.getElementById('status').innerText = "Error connecting to server.";
+                });
+        }
     </script>
 
 </body>
