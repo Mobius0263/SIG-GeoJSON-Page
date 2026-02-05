@@ -28,6 +28,21 @@
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
+
+        fetch('map.geojson')
+            .then(response => response.json())
+            .then(data => {
+                // Add the GeoJSON layer to the map
+                L.geoJSON(data, {
+                    onEachFeature: function(feature, layer) {
+                        // Check if your feature has a property to show in a popup
+                        // TODO: Change 'name' to a property from your file (e.g., 'keterangan')
+                        if (feature.properties && feature.properties.name) {
+                            layer.bindPopup(feature.properties.name);
+                        }
+                    }
+                }).addTo(map);
+            });
     </script>
 
 </body>
