@@ -3,9 +3,9 @@ const { MongoClient } = require('mongodb');
 const app = express();
 const port = 3000;
 
-const url = 'mongodb://localhost:27017';
+const url = 'mongodb+srv://Mobius0263:lol13175lol@cluster0263.qp5qlqc.mongodb.net/';
 const client = new MongoClient(url);
-const dbName = 'flightDB';
+const dbName = 'geojsondb';
 
 app.use(express.static('public')); // Serves your HTML
 
